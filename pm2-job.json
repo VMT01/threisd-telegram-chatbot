@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "threisd-telegram-chatbot",
+      "script": "/home/ubuntu/threisd-telegram-bot/target/release/threisd-telegram-bot",
+      "instances": 1
+    }
+  ]
+}
