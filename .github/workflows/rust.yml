@@ -13,40 +13,29 @@ jobs:
         uses: actions/checkout@v3
       - name: Prepare ENV
         run: |
-          echo "${{ secrets.NGROK_AUTHTOKEN }}" >> .env
-          echo "${{ secrets.BOT_TOKEN }}" >> .env
-          echo "${{ vars.SOCKET_ADDR }}" >> .env
-          echo "${{ vars.WEBHOOK_DOMAIN }}" >> .env
-  # compile:
-  #   name: Compile
-  #   runs-on: [self-hosted, runner_dev]
-  #   needs: [lint, prepare-env]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #     - name: Setup Rust
-  #       uses: dtolnay/rust-toolchain@stable
-  #     - name: Compile
-  #       run: cargo build -r --verbose
-  # test:
-  #   name: Test
-  #   runs-on: [self-hosted, runner_dev]
-  #   needs: [lint, prepare-env, compile]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #     - name: Setup Rust
-  #       uses: dtolnay/rust-toolchain@stable
-  #     - name: Run test
-  #       run: cargo test --verbose
-  # func:
-  #   name: Run the work
-  #   runs-on: [self-hosted, runner_dev]
-  #   needs: [lint, prepare-env, compile, test]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #     - name: Setup Rust
-  #       uses: dtolnay/rust-toolchain@stable
-  #     - name: Run executable
-  #       run: pm2 restart pm2-job.json
+          echo "NGROK_AUTHTOKEN=${{ secrets.NGROK_AUTHTOKEN }}" >> .env
+          echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
+          echo "SOCKET_ADDR=${{ vars.SOCKET_ADDR }}" >> .env
+          echo "WEBHOOK_DOMAIN=${{ vars.WEBHOOK_DOMAIN }}" >> .env
+  compile:
+    name: Compile
+    runs-on: [self-hosted, runner_dev]
+    needs: [prepare-env]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Compile
+        run: cargo build -r --jobs 1
+  func:
+    name: Run the work
+    runs-on: [self-hosted, runner_dev]
+    needs: [prepare-env, compile]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Run executable
+        run: pm2 restart pm2-job.json
