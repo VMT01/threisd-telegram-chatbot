@@ -7,7 +7,7 @@ on:
 jobs:
   prepare-env:
     name: Prepare ENV
-    runs-on: [self-hosted, runner_dev]
+    runs-on: [self-hosted, deploy-threisd]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,7 +19,7 @@ jobs:
           echo "WEBHOOK_DOMAIN=${{ vars.WEBHOOK_DOMAIN }}" >> .env
   compile:
     name: Compile
-    runs-on: [self-hosted, runner_dev]
+    runs-on: [self-hosted, deploy-threisd]
     needs: [prepare-env]
     steps:
       - name: Checkout
@@ -30,7 +30,7 @@ jobs:
         run: cargo build -r --jobs 1
   func:
     name: Run the work
-    runs-on: [self-hosted, runner_dev]
+    runs-on: [self-hosted, deploy-threisd]
     needs: [prepare-env, compile]
     steps:
       - name: Checkout
