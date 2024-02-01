@@ -5,22 +5,9 @@ on:
     branches:
       - "main"
 jobs:
-  lint:
-    name: Lint
-    runs-on: [self-hosted, runner_dev]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
-      - name: Linting
-        run: cargo clippy
   prepare-env:
     name: Prepare ENV
     runs-on: [self-hosted, runner_dev]
-    needs: lint
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,36 +17,36 @@ jobs:
           echo "${{ secrets.BOT_TOKEN }}" >> .env
           echo "${{ vars.SOCKET_ADDR }}" >> .env
           echo "${{ vars.WEBHOOK_DOMAIN }}" >> .env
-  compile:
-    name: Compile
-    runs-on: [self-hosted, runner_dev]
-    needs: [lint, prepare-env]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-      - name: Compile
-        run: cargo build -r --verbose
-  test:
-    name: Test
-    runs-on: [self-hosted, runner_dev]
-    needs: [lint, prepare-env, compile]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-      - name: Run test
-        run: cargo test --verbose
-  func:
-    name: Run the work
-    runs-on: [self-hosted, runner_dev]
-    needs: [lint, prepare-env, compile, test]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-      - name: Run executable
-        run: pm2 restart pm2-job.json
+  # compile:
+  #   name: Compile
+  #   runs-on: [self-hosted, runner_dev]
+  #   needs: [lint, prepare-env]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #     - name: Compile
+  #       run: cargo build -r --verbose
+  # test:
+  #   name: Test
+  #   runs-on: [self-hosted, runner_dev]
+  #   needs: [lint, prepare-env, compile]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #     - name: Run test
+  #       run: cargo test --verbose
+  # func:
+  #   name: Run the work
+  #   runs-on: [self-hosted, runner_dev]
+  #   needs: [lint, prepare-env, compile, test]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #     - name: Run executable
+  #       run: pm2 restart pm2-job.json

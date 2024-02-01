@@ -20,6 +20,6 @@ impl EEnvKey {
 
     pub fn get_env_value(&self) -> String {
         let key = self.to_str();
-        env::var(key).expect(format!("{} must be set!", key).as_str())
+        env::var(key).unwrap_or_else(|_| panic!("{} must be set!", key))
     }
 }
