@@ -1,5 +1,7 @@
 /target
 
 .env
+.log
 Makefile
-threisd-telegram-chatbot.pem
+run.sh
+threisd-chatbot.pem

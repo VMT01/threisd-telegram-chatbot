@@ -1,9 +1,0 @@
-{
-  "apps": [
-    {
-      "name": "threisd-telegram-chatbot",
-      "script": "target/release/threisd-telegram-bot",
-      "instances": 1
-    }
-  ]
-}
