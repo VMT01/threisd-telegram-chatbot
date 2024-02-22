@@ -5,3 +5,4 @@
 Makefile
 run.sh
 threisd-chatbot.pem
+threisd.sqlite

@@ -10,6 +10,7 @@ edition = "2021"
 anyhow = "1.0.79"
 axum = "0.6.20"
 chrono = "0.4.31"
+diesel = { version = "2.1.4", features = ["sqlite", "r2d2", "chrono"] }
 dotenvy = "0.15.7"
 lazy_static = "1.4.0"
 log = "0.4.20"

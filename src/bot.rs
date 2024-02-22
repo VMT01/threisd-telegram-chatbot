@@ -1,4 +1,4 @@
-use anyhow::{Ok, Result};
+use anyhow::Result;
 use axum::{Router, Server};
 use log::{error, info, warn, LevelFilter};
 use log4rs::{
@@ -14,13 +14,12 @@ use log4rs::{
 use ngrok::{config::TunnelBuilder, Session};
 use std::convert::Infallible;
 use teloxide::{
-    dispatching::{Dispatcher, UpdateFilterExt},
-    dptree::deps,
+    dispatching::Dispatcher,
     prelude::*,
     update_listeners::{webhooks, UpdateListener},
 };
 
-use crate::constants::ENV_CONSTANTS;
+use crate::{constants::ENV_CONSTANTS, handlers::build_handlers, types::TeloxideDispatcher};
 
 /// Thiết lập logger
 fn setup_logger() -> Result<()> {
@@ -105,23 +104,17 @@ async fn setup_listener(bot: &Bot) -> Result<impl UpdateListener<Err = Infallibl
 }
 
 /// Truyền phát dữ liệu qua webhook
-async fn dispatching(bot: Bot, listener: impl UpdateListener<Err = Infallible>) {
-    let handler = dptree::entry().branch(Update::filter_message().endpoint(
-        |bot: Bot, msg: Message| async move {
-            bot.send_message(msg.chat.id, "Hello World").await?;
-            Ok(())
-        },
-    ));
-
-    Dispatcher::builder(bot, handler)
-        .dependencies(deps![])
+fn build_dispatcher(bot: Bot) -> TeloxideDispatcher {
+    Dispatcher::builder(bot, build_handlers())
+        .dependencies(dptree::deps![])
         .enable_ctrlc_handler()
+        .default_handler(|upd| async move {
+            warn!("Unhandled update: {:?}", upd);
+        })
+        .error_handler(LoggingErrorHandler::with_custom_text(
+            "An error has occurred in the dispatcher",
+        ))
         .build()
-        .dispatch_with_listener(
-            listener,
-            LoggingErrorHandler::with_custom_text("An error from the update listener"),
-        )
-        .await;
 }
 
 /// Khởi chạy bot
@@ -131,7 +124,14 @@ pub async fn start() -> Result<()> {
 
     let bot = Bot::new(&ENV_CONSTANTS.bot_token);
     let listener = setup_listener(&bot).await?;
-    dispatching(bot, listener).await;
+    let mut dispatcher = build_dispatcher(bot);
+
+    dispatcher
+        .dispatch_with_listener(
+            listener,
+            LoggingErrorHandler::with_custom_text("An error from the update listener"),
+        )
+        .await;
 
     Ok(())
 }
