@@ -1,22 +1,22 @@
 use diesel::{
     r2d2::{ConnectionManager, Pool},
-    sqlite::SqliteConnection,
+    SqliteConnection,
 };
 
 use crate::{constants::ENV_CONSTANTS, types::SqlitePool};
 
 pub struct DatabaseConfig {
-    pub sqlite_pool: SqlitePool,
+    pub pool: SqlitePool,
 }
 
 impl DatabaseConfig {
     pub fn init() -> Self {
-        let sqlite_pool = Pool::builder()
+        let pool = Pool::builder()
             .build(ConnectionManager::<SqliteConnection>::new(
                 &ENV_CONSTANTS.database_url,
             ))
-            .unwrap_or_else(|e| panic!("Failed to establish connection: {}", e));
+            .unwrap_or_else(|err| panic!("Failed to establish connection: {}", err));
 
-        Self { sqlite_pool }
+        Self { pool }
     }
 }

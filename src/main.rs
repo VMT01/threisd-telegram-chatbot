@@ -1,15 +1,13 @@
-mod bot;
 mod configs;
 mod constants;
 mod handlers;
 mod models;
 mod schema;
+mod states;
+mod threisd;
 mod types;
 
-use anyhow::Result;
-
 #[tokio::main]
-async fn main() -> Result<()> {
-    bot::start().await?;
-    Ok(())
+async fn main() {
+    threisd::start().await;
 }

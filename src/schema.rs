@@ -2,9 +2,10 @@
 
 diesel::table! {
     users (id) {
-        id -> Integer,
-        created_at -> Timestamp,
-        updated_at -> Timestamp,
+        id -> Nullable<Integer>,
+        created_at -> Text,
+        updated_at -> Text,
         uid -> Text,
+        uemail -> Text,
     }
 }

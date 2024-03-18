@@ -1,10 +1,8 @@
 mod env_constants;
 
-use lazy_static::lazy_static;
+use env_constants::EnvConstant;
 
-use self::env_constants::EnvConstant;
-
-lazy_static! {
+lazy_static::lazy_static! {
     pub static ref ENV_CONSTANTS: EnvConstant = EnvConstant::init();
 }
 
@@ -20,7 +18,6 @@ mod tests {
 
     #[test]
     fn get_lazy_env() {
-        let env_constants = &ENV_CONSTANTS;
-        assert_ne!("".to_string(), env_constants.database_url);
+        assert_ne!("".to_string(), ENV_CONSTANTS.bot_token)
     }
 }
